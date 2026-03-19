@@ -1,0 +1,30 @@
+{
+  "name": "webex-calling-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for managing Webex Calling infrastructure via natural language",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "auth": "tsx src/auth-cli.ts"
+  },
+  "keywords": [
+    "mcp",
+    "webex",
+    "calling",
+    "cisco",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
