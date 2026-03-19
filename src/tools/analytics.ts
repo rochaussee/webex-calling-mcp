@@ -106,12 +106,20 @@ export function registerAnalyticsTools(server: McpServer, api: WebexApiClient) {
     async (params) => {
       try {
         const now = Date.now();
-        const fiveMinAgo = new Date(now - 5 * 60 * 1000).toISOString();
+        const tenMinAgo = new Date(now - 10 * 60 * 1000);
         const twelveHoursAgo = new Date(now - 12 * 60 * 60 * 1000).toISOString();
+
+        // Clamp endTime to at least 10 minutes in the past (Webex API requirement)
+        let endTime = params.endTime
+          ? new Date(params.endTime)
+          : tenMinAgo;
+        if (endTime.getTime() > tenMinAgo.getTime()) {
+          endTime = tenMinAgo;
+        }
 
         const result = (await api.getCallDetailRecords({
           startTime: params.startTime || twelveHoursAgo,
-          endTime: params.endTime || fiveMinAgo,
+          endTime: endTime.toISOString(),
           locations: params.locationId,
           max: params.max,
         })) as { items?: CdrRecord[] };
@@ -190,7 +198,7 @@ export function registerAnalyticsTools(server: McpServer, api: WebexApiClient) {
         const lines: string[] = [];
         lines.push(`## Call History — ${personLabel}`);
         lines.push(
-          `**Period:** ${params.startTime || twelveHoursAgo} → ${params.endTime || fiveMinAgo}`
+          `**Period:** ${params.startTime || twelveHoursAgo} → ${endTime.toISOString()}`
         );
         lines.push(
           `**Total:** ${unique.length} calls | ${answered} answered | ${missed} missed | Total duration: ${formatDuration(totalDuration)}`
@@ -257,10 +265,18 @@ export function registerAnalyticsTools(server: McpServer, api: WebexApiClient) {
     async (params) => {
       try {
         const now = Date.now();
-        const fiveMinAgo = new Date(now - 5 * 60 * 1000);
+        const tenMinAgo = new Date(now - 10 * 60 * 1000);
         const twelveHoursAgo = new Date(now - 12 * 60 * 60 * 1000);
         const startTime = params.startTime || twelveHoursAgo.toISOString();
-        const endTime = params.endTime || fiveMinAgo.toISOString();
+
+        // Clamp endTime to at least 10 minutes in the past (Webex API requirement)
+        let endTimeDate = params.endTime
+          ? new Date(params.endTime)
+          : tenMinAgo;
+        if (endTimeDate.getTime() > tenMinAgo.getTime()) {
+          endTimeDate = tenMinAgo;
+        }
+        const endTime = endTimeDate.toISOString();
 
         const result = (await api.getCallDetailRecords({
           startTime,
