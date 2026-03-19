@@ -76,13 +76,24 @@ npm install
 npm run build
 ```
 
-### 3. Authenticate
+### 3. Authenticate (one-time setup)
 
 ```bash
 WEBEX_CLIENT_ID=xxx WEBEX_CLIENT_SECRET=yyy npm run auth
 ```
 
-This opens your browser for Webex login. Tokens are stored locally in `~/.webex-mcp/tokens.json` and auto-refreshed (access token ~14 days, refresh token ~90 days).
+Replace `xxx` and `yyy` with the **Client ID** and **Client Secret** from step 1.
+
+**What happens:**
+1. Your browser opens the Webex login page
+2. You sign in with your Webex admin account
+3. Webex sends back authentication tokens to the local server
+4. Tokens are saved locally in `~/.webex-mcp/tokens.json`
+
+**About tokens:**
+- **Access token** (~14 days): used by the MCP server to call Webex APIs
+- **Refresh token** (~90 days): used to automatically renew the access token when it expires
+- You only need to re-run `npm run auth` every ~90 days when the refresh token expires
 
 Useful commands:
 ```bash
@@ -93,9 +104,13 @@ npm run auth -- --help     # Full help
 
 ### 4. Configure in your MCP Client
 
+The MCP server needs your **Client ID** and **Client Secret** at runtime to automatically refresh expired access tokens. These are passed as environment variables in the MCP configuration.
+
+> **Why are Client ID / Secret needed here too?** The `npm run auth` step uses them to *obtain* tokens. The MCP server config needs them to *refresh* tokens automatically. Without them, you'd have to re-authenticate manually every ~14 days instead of every ~90 days.
+
 #### VS Code (Copilot / Claude Dev)
 
-Add to your `.vscode/mcp.json` or VS Code settings:
+Add to your `.vscode/mcp.json` or VS Code global settings (`~/Library/Application Support/Code/User/mcp.json` on macOS):
 
 ```json
 {
@@ -111,6 +126,8 @@ Add to your `.vscode/mcp.json` or VS Code settings:
   }
 }
 ```
+
+> **Security note:** This file is local to your machine and not tracked by git. Never commit your credentials.
 
 #### Claude Desktop
 
