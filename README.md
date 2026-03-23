@@ -86,11 +86,23 @@ npm run build
 
 ### 3. Authenticate (one-time setup)
 
+**macOS / Linux (bash/zsh):**
+
 ```bash
 WEBEX_CLIENT_ID=xxx WEBEX_CLIENT_SECRET=yyy npm run auth
 ```
 
+**Windows (PowerShell):**
+
+```powershell
+$env:WEBEX_CLIENT_ID="xxx"
+$env:WEBEX_CLIENT_SECRET="yyy"
+npm run auth
+```
+
 Replace `xxx` and `yyy` with the **Client ID** and **Client Secret** from step 1.
+
+> **Note Windows:** La syntaxe `VAR=value command` ne fonctionne pas dans PowerShell. Il faut définir les variables d'environnement séparément avec `$env:VAR="value"` avant de lancer la commande.
 
 **What happens:**
 
@@ -121,7 +133,9 @@ The MCP server needs your **Client ID** and **Client Secret** at runtime to auto
 
 #### VS Code (Copilot / Claude Dev)
 
-Add to your `.vscode/mcp.json` or VS Code global settings (`~/Library/Application Support/Code/User/mcp.json` on macOS):
+Add to your `.vscode/mcp.json` or VS Code global settings:
+- **macOS**: `~/Library/Application Support/Code/User/mcp.json`
+- **Windows**: `%APPDATA%\Code\User\mcp.json`
 
 ```json
 {
@@ -142,7 +156,9 @@ Add to your `.vscode/mcp.json` or VS Code global settings (`~/Library/Applicatio
 
 #### Claude Desktop
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Add to your Claude Desktop config:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -204,6 +220,8 @@ src/
 
 ## Development
 
+**macOS / Linux (bash/zsh):**
+
 ```bash
 # Run in development mode (no build step)
 WEBEX_CLIENT_ID=xxx WEBEX_CLIENT_SECRET=yyy npx tsx src/index.ts
@@ -215,10 +233,27 @@ npm run build
 WEBEX_CLIENT_ID=xxx WEBEX_CLIENT_SECRET=yyy node dist/index.js
 ```
 
+**Windows (PowerShell):**
+
+```powershell
+# Set environment variables (do this once per terminal session)
+$env:WEBEX_CLIENT_ID="xxx"
+$env:WEBEX_CLIENT_SECRET="yyy"
+
+# Run in development mode
+npx tsx src/index.ts
+
+# Build for production
+npm run build
+
+# Run production build
+node dist/index.js
+```
+
 ## Security Notes
 
 - **Never commit your Client ID / Client Secret** — always use environment variables
-- Tokens are stored locally in `~/.webex-mcp/tokens.json` with restricted permissions
+- Tokens are stored locally in `~/.webex-mcp/tokens.json` (macOS/Linux) or `%USERPROFILE%\.webex-mcp\tokens.json` (Windows) with restricted permissions
 - Token scope requirements depend on which tools you use:
   - `spark-admin:people_read` — people listing
   - `spark-admin:telephony_config_read` / `_write` — calling config
