@@ -40,9 +40,6 @@ import { registerLocationTools } from "./tools/locations.js";
 import { registerDeviceTools } from "./tools/devices.js";
 import { registerContactTools } from "./tools/contacts.js";
 
-// Prompt registrations
-import { registerPeoplePrompts } from "./prompts/people.js";
-
 // ─── Configuration ───────────────────────────────────────────────────────────
 
 const config = getOAuthConfig(); // requires WEBEX_CLIENT_ID + WEBEX_CLIENT_SECRET
@@ -108,10 +105,6 @@ registerAnalyticsTools(server, api);
 registerLocationTools(server, api);
 registerDeviceTools(server, api);
 registerContactTools(server, api);
-
-// ─── Register Prompts ─────────────────────────────────────────────────────────
-
-registerPeoplePrompts(server);
 
 // ─── Start Server ────────────────────────────────────────────────────────────
 

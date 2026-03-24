@@ -10,7 +10,12 @@ export function registerPeopleTools(server: McpServer, api: WebexApiClient) {
   server.tool(
     "list_people",
     "List people/users in the Webex organization. Can filter by email, name, or location. " +
-      "Use callingData=true to include phone numbers and calling info.",
+      "Always use callingData=true to include phone numbers and calling info. " +
+      "When filtering by location name (e.g. 'Paris'), first use list_locations to resolve the locationId. " +
+      "IMPORTANT: After getting results, always call list_locations to resolve each locationId into the location name. " +
+      "Present results as a formatted table with columns: Display Name, Email, Phone Number(s), Extension, Location (name, not ID). " +
+      "Display phone numbers exactly as returned by the API without adding spaces (e.g. +33189311254, not +33 1 89 31 12 54). " +
+      "If no users match, suggest alternative search criteria.",
     {
       email: z.string().optional().describe("Filter by exact email address"),
       displayName: z
