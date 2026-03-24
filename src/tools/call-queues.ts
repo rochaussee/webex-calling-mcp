@@ -7,13 +7,15 @@ import { WebexApiClient } from "../webex-api.js";
 
 export function registerCallQueueTools(server: McpServer, api: WebexApiClient) {
   // ── List Call Queues ──
-  server.tool(
+  server.registerTool(
     "list_call_queues",
-    "List all call queues in the organization. Optionally filter by location or name.",
     {
+      description: "List all call queues in the organization. Optionally filter by location or name.",
+      inputSchema: {
       locationId: z.string().optional().describe("Filter by location ID"),
       name: z.string().optional().describe("Filter by queue name"),
       max: z.number().optional().default(100).describe("Maximum results"),
+      },
     },
     async (params) => {
       try {
@@ -35,12 +37,14 @@ export function registerCallQueueTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Get Call Queue Details ──
-  server.tool(
+  server.registerTool(
     "get_call_queue",
-    "Get detailed configuration of a specific call queue, including agents, policies, and overflow settings.",
     {
-      locationId: z.string().describe("The location ID of the call queue"),
-      queueId: z.string().describe("The unique ID of the call queue"),
+      description: "Get detailed configuration of a specific call queue, including agents, policies, and overflow settings.",
+      inputSchema: {
+        locationId: z.string().describe("The location ID of the call queue"),
+        queueId: z.string().describe("The unique ID of the call queue"),
+      },
     },
     async (params) => {
       try {
@@ -58,12 +62,13 @@ export function registerCallQueueTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Create Call Queue ──
-  server.tool(
+  server.registerTool(
     "create_call_queue",
-    "Create a new call queue at a specific location. A call queue holds callers in a queue " +
-      "and distributes calls to agents. Supports CIRCULAR, REGULAR, SIMULTANEOUS, UNIFORM, " +
-      "WEIGHTED, and LONGEST_IDLE routing policies.",
     {
+      description: "Create a new call queue at a specific location. A call queue holds callers in a queue " +
+        "and distributes calls to agents. Supports CIRCULAR, REGULAR, SIMULTANEOUS, UNIFORM, " +
+        "WEIGHTED, and LONGEST_IDLE routing policies.",
+      inputSchema: {
       locationId: z.string().describe("The location ID where the queue will be created"),
       name: z.string().describe("Name of the call queue"),
       phoneNumber: z
@@ -84,6 +89,7 @@ export function registerCallQueueTools(server: McpServer, api: WebexApiClient) {
         .default(25)
         .describe("Max number of callers allowed in the queue (2-525)"),
       enabled: z.boolean().optional().default(true).describe("Enable the queue"),
+      },
     },
     async (params) => {
       try {
@@ -119,10 +125,11 @@ export function registerCallQueueTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Update Call Queue ──
-  server.tool(
+  server.registerTool(
     "update_call_queue",
-    "Update an existing call queue — change agents, routing policy, queue size, etc.",
     {
+      description: "Update an existing call queue — change agents, routing policy, queue size, etc.",
+      inputSchema: {
       locationId: z.string().describe("The location ID of the call queue"),
       queueId: z.string().describe("The unique ID of the call queue to update"),
       name: z.string().optional().describe("New name"),
@@ -136,6 +143,7 @@ export function registerCallQueueTools(server: McpServer, api: WebexApiClient) {
         .describe("New list of person IDs for agents"),
       queueSize: z.number().optional().describe("New max queue size"),
       enabled: z.boolean().optional().describe("Enable or disable"),
+      },
     },
     async (params) => {
       try {
@@ -165,12 +173,14 @@ export function registerCallQueueTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Delete Call Queue ──
-  server.tool(
+  server.registerTool(
     "delete_call_queue",
-    "Delete a call queue. This action cannot be undone.",
     {
-      locationId: z.string().describe("The location ID of the call queue"),
-      queueId: z.string().describe("The unique ID of the call queue to delete"),
+      description: "Delete a call queue. This action cannot be undone.",
+      inputSchema: {
+        locationId: z.string().describe("The location ID of the call queue"),
+        queueId: z.string().describe("The unique ID of the call queue to delete"),
+      },
     },
     async (params) => {
       try {

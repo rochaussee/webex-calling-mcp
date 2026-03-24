@@ -7,11 +7,13 @@ import { WebexApiClient } from "../webex-api.js";
 
 export function registerCallForwardingTools(server: McpServer, api: WebexApiClient) {
   // ── Get Call Forwarding ──
-  server.tool(
+  server.registerTool(
     "get_call_forwarding",
-    "Get the call forwarding settings for a specific user.",
     {
-      personId: z.string().describe("The unique ID of the person"),
+      description: "Get the call forwarding settings for a specific user.",
+      inputSchema: {
+        personId: z.string().describe("The unique ID of the person"),
+      },
     },
     async (params) => {
       try {
@@ -29,11 +31,12 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
   );
 
   // ── Update Call Forwarding ──
-  server.tool(
+  server.registerTool(
     "update_call_forwarding",
-    "Update call forwarding settings for a user. Can enable/disable forwarding, " +
-      "set always-forward, busy-forward, no-answer-forward, and selective forwarding rules.",
     {
+      description: "Update call forwarding settings for a user. Can enable/disable forwarding, " +
+        "set always-forward, busy-forward, no-answer-forward, and selective forwarding rules.",
+      inputSchema: {
       personId: z.string().describe("The unique ID of the person"),
       callForwarding: z
         .object({
@@ -66,6 +69,7 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
             .describe("Forward when no answer"),
         })
         .describe("Call forwarding configuration"),
+      },
     },
     async (params) => {
       try {
@@ -90,11 +94,13 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
   );
 
   // ── Get Voicemail Settings ──
-  server.tool(
+  server.registerTool(
     "get_voicemail",
-    "Get voicemail settings for a specific user.",
     {
-      personId: z.string().describe("The unique ID of the person"),
+      description: "Get voicemail settings for a specific user.",
+      inputSchema: {
+        personId: z.string().describe("The unique ID of the person"),
+      },
     },
     async (params) => {
       try {
@@ -112,10 +118,11 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
   );
 
   // ── Update Voicemail Settings ──
-  server.tool(
+  server.registerTool(
     "update_voicemail",
-    "Update voicemail settings for a user. Enable/disable voicemail, configure notifications, greetings, etc.",
     {
+      description: "Update voicemail settings for a user. Enable/disable voicemail, configure notifications, greetings, etc.",
+      inputSchema: {
       personId: z.string().describe("The unique ID of the person"),
       enabled: z.boolean().optional().describe("Enable or disable voicemail"),
       sendAllCalls: z
@@ -144,6 +151,7 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
         })
         .optional()
         .describe("Email notification settings for new voicemails"),
+      },
     },
     async (params) => {
       try {
@@ -167,12 +175,13 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
   );
 
   // ── Redirect Calls to Voicemail (Call Intercept) ──
-  server.tool(
+  server.registerTool(
     "redirect_calls_to_voicemail",
-    "Redirect all incoming calls for a user to voicemail using call intercept. " +
-      "Perfect for out-of-office, holidays, or temporary redirections. " +
-      'Example: "Redirect all calls from the Paris office to voicemail until Monday."',
     {
+      description: "Redirect all incoming calls for a user to voicemail using call intercept. " +
+        "Perfect for out-of-office, holidays, or temporary redirections. " +
+        'Example: "Redirect all calls from the Paris office to voicemail until Monday."',
+      inputSchema: {
       personId: z.string().describe("The unique ID of the person"),
       enabled: z.boolean().describe("Enable (true) or disable (false) the call intercept / redirection"),
       incomingType: z
@@ -185,6 +194,7 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
         .optional()
         .default(true)
         .describe("Send intercepted calls to voicemail"),
+      },
     },
     async (params) => {
       try {
@@ -215,16 +225,18 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
   );
 
   // ── Do Not Disturb ──
-  server.tool(
+  server.registerTool(
     "set_do_not_disturb",
-    "Enable or disable Do Not Disturb for a user. When enabled, all calls go directly to voicemail.",
     {
+      description: "Enable or disable Do Not Disturb for a user. When enabled, all calls go directly to voicemail.",
+      inputSchema: {
       personId: z.string().describe("The unique ID of the person"),
       enabled: z.boolean().describe("Enable (true) or disable (false) DND"),
       ringSplashEnabled: z
         .boolean()
         .optional()
         .describe("Play ring splash on phone when call arrives during DND"),
+      },
     },
     async (params) => {
       try {

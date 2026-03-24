@@ -7,16 +7,17 @@ import { WebexApiClient } from "../webex-api.js";
 
 export function registerPeopleTools(server: McpServer, api: WebexApiClient) {
   // ── List People ──
-  server.tool(
+  server.registerTool(
     "list_people",
-    "List people/users in the Webex organization. Can filter by email, name, or location. " +
-      "Always use callingData=true to include phone numbers and calling info. " +
-      "When filtering by location name (e.g. 'Paris'), first use list_locations to resolve the locationId. " +
-      "IMPORTANT: After getting results, always call list_locations to resolve each locationId into the location name. " +
-      "Present results as a formatted table with columns: Display Name, Email, Phone Number(s), Extension, Location (name, not ID). " +
-      "Display phone numbers exactly as returned by the API without adding spaces (e.g. +33189311254, not +33 1 89 31 12 54). " +
-      "If no users match, suggest alternative search criteria.",
     {
+      description: "List people/users in the Webex organization. Can filter by email, name, or location. " +
+        "Always use callingData=true to include phone numbers and calling info. " +
+        "When filtering by location name (e.g. 'Paris'), first use list_locations to resolve the locationId. " +
+        "IMPORTANT: After getting results, always call list_locations to resolve each locationId into the location name. " +
+        "Present results as a formatted table with columns: Display Name, Email, Phone Number(s), Extension, Location (name, not ID). " +
+        "Display phone numbers exactly as returned by the API without adding spaces (e.g. +33189311254, not +33 1 89 31 12 54). " +
+        "If no users match, suggest alternative search criteria.",
+      inputSchema: {
       email: z.string().optional().describe("Filter by exact email address"),
       displayName: z
         .string()
@@ -33,6 +34,7 @@ export function registerPeopleTools(server: McpServer, api: WebexApiClient) {
         .optional()
         .default(100)
         .describe("Maximum number of results (default: 100)"),
+      },
     },
     async (params) => {
       try {
@@ -56,16 +58,18 @@ export function registerPeopleTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Get Person Details ──
-  server.tool(
+  server.registerTool(
     "get_person",
-    "Get detailed information about a specific person/user, including their calling settings, devices, and phone numbers.",
     {
+      description: "Get detailed information about a specific person/user, including their calling settings, devices, and phone numbers.",
+      inputSchema: {
       personId: z.string().describe("The unique ID of the person"),
       callingData: z
         .boolean()
         .optional()
         .default(true)
         .describe("Include calling data"),
+      },
     },
     async (params) => {
       try {
@@ -83,11 +87,12 @@ export function registerPeopleTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Find Users Without Phones ──
-  server.tool(
+  server.registerTool(
     "find_users_without_phones",
-    "Find all users in the organization who do not have a phone number assigned. " +
-      "Great for auditing and compliance checks.",
     {
+      description: "Find all users in the organization who do not have a phone number assigned. " +
+        "Great for auditing and compliance checks.",
+      inputSchema: {
       locationId: z
         .string()
         .optional()
@@ -97,6 +102,7 @@ export function registerPeopleTools(server: McpServer, api: WebexApiClient) {
         .optional()
         .default(200)
         .describe("Maximum number of users to check"),
+      },
     },
     async (params) => {
       try {

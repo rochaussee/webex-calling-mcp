@@ -7,11 +7,12 @@ import { WebexApiClient, extractUuid } from "../webex-api.js";
 
 export function registerContactTools(server: McpServer, api: WebexApiClient) {
   // ── List Organization Contacts ──
-  server.tool(
+  server.registerTool(
     "list_org_contacts",
-    "List organization contacts in the Webex directory. Can search by keyword (name, email). " +
-      "These are external contacts visible to all users in the Webex org directory.",
     {
+      description: "List organization contacts in the Webex directory. Can search by keyword (name, email). " +
+        "These are external contacts visible to all users in the Webex org directory.",
+      inputSchema: {
       keyword: z
         .string()
         .optional()
@@ -27,6 +28,7 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
         .optional()
         .default(100)
         .describe("Maximum number of results (default: 100)"),
+      },
     },
     async (params) => {
       try {
@@ -50,11 +52,13 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Get Organization Contact Details ──
-  server.tool(
+  server.registerTool(
     "get_org_contact",
-    "Get detailed information about a specific organization contact by its contact ID.",
     {
-      contactId: z.string().describe("The unique ID of the contact"),
+      description: "Get detailed information about a specific organization contact by its contact ID.",
+      inputSchema: {
+        contactId: z.string().describe("The unique ID of the contact"),
+      },
     },
     async (params) => {
       try {
@@ -74,12 +78,13 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Create Organization Contact ──
-  server.tool(
+  server.registerTool(
     "create_org_contact",
-    "Create a new organization contact in the Webex directory. " +
-      "At least one of phoneNumbers, emails, or sipAddresses is required. " +
-      "This contact will be visible to all users in the org.",
     {
+      description: "Create a new organization contact in the Webex directory. " +
+        "At least one of phoneNumbers, emails, or sipAddresses is required. " +
+        "This contact will be visible to all users in the org.",
+      inputSchema: {
       firstName: z.string().optional().describe("First name of the contact"),
       lastName: z.string().optional().describe("Last name of the contact"),
       displayName: z
@@ -151,6 +156,7 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
           "Array of group IDs to associate with this contact. Use list_groups to find available group IDs. " +
             "Contacts with group IDs are only visible to users in those groups."
         ),
+      },
     },
     async (params) => {
       try {
@@ -187,11 +193,12 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Update Organization Contact ──
-  server.tool(
+  server.registerTool(
     "update_org_contact",
-    "Update an existing organization contact. Only the fields provided will be updated. " +
-      "Use list_org_contacts first to find the contactId.",
     {
+      description: "Update an existing organization contact. Only the fields provided will be updated. " +
+        "Use list_org_contacts first to find the contactId.",
+      inputSchema: {
       contactId: z.string().describe("The unique ID of the contact to update"),
       firstName: z.string().optional().describe("Updated first name"),
       lastName: z.string().optional().describe("Updated last name"),
@@ -241,6 +248,7 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
         .describe(
           "Updated group IDs. Pass an empty array to remove all group associations."
         ),
+      },
     },
     async (params) => {
       try {
@@ -266,12 +274,14 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Delete Organization Contact ──
-  server.tool(
+  server.registerTool(
     "delete_org_contact",
-    "Delete an organization contact from the Webex directory. This is irreversible. " +
-      "Use list_org_contacts first to find the contactId.",
     {
-      contactId: z.string().describe("The unique ID of the contact to delete"),
+      description: "Delete an organization contact from the Webex directory. This is irreversible. " +
+        "Use list_org_contacts first to find the contactId.",
+      inputSchema: {
+        contactId: z.string().describe("The unique ID of the contact to delete"),
+      },
     },
     async (params) => {
       try {
@@ -296,12 +306,13 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── List Groups ──
-  server.tool(
+  server.registerTool(
     "list_groups",
-    "List groups in the Webex organization. Groups are used to scope org contacts visibility — " +
-      "a contact assigned to a group is only visible to members of that group. " +
-      "Use the returned group IDs when creating or updating org contacts with groupIds.",
     {
+      description: "List groups in the Webex organization. Groups are used to scope org contacts visibility — " +
+        "a contact assigned to a group is only visible to members of that group. " +
+        "Use the returned group IDs when creating or updating org contacts with groupIds.",
+      inputSchema: {
       filter: z
         .string()
         .optional()
@@ -318,6 +329,7 @@ export function registerContactTools(server: McpServer, api: WebexApiClient) {
         .optional()
         .default(100)
         .describe("Number of results per page (default: 100)"),
+      },
     },
     async (params) => {
       try {

@@ -7,11 +7,12 @@ import { WebexApiClient } from "../webex-api.js";
 
 export function registerNumberTools(server: McpServer, api: WebexApiClient) {
   // ── List Numbers ──
-  server.tool(
+  server.registerTool(
     "list_numbers",
-    "List phone numbers in the organization. Can filter by location, specific number, " +
-      "or availability status. Useful for auditing number usage and finding available numbers.",
     {
+      description: "List phone numbers in the organization. Can filter by location, specific number, " +
+        "or availability status. Useful for auditing number usage and finding available numbers.",
+      inputSchema: {
       locationId: z.string().optional().describe("Filter by location ID"),
       phoneNumber: z.string().optional().describe("Filter by exact phone number"),
       available: z
@@ -19,6 +20,7 @@ export function registerNumberTools(server: McpServer, api: WebexApiClient) {
         .optional()
         .describe("Filter available (unassigned) or assigned numbers"),
       max: z.number().optional().default(100).describe("Maximum results"),
+      },
     },
     async (params) => {
       try {
@@ -41,13 +43,15 @@ export function registerNumberTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Find Available Numbers ──
-  server.tool(
+  server.registerTool(
     "find_available_numbers",
-    "Find phone numbers that are available (not assigned to any user, workspace, or feature). " +
-      "Useful when you need to assign a number to a new user or hunt group.",
     {
+      description: "Find phone numbers that are available (not assigned to any user, workspace, or feature). " +
+        "Useful when you need to assign a number to a new user or hunt group.",
+      inputSchema: {
       locationId: z.string().optional().describe("Limit search to a specific location"),
       max: z.number().optional().default(50).describe("Maximum results"),
+      },
     },
     async (params) => {
       try {

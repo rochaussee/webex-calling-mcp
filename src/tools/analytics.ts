@@ -58,13 +58,14 @@ function getDeviceLabel(record: CdrRecord): string {
 
 export function registerAnalyticsTools(server: McpServer, api: WebexApiClient) {
   // ── Get Call History / CDR ──
-  server.tool(
+  server.registerTool(
     "get_call_history",
-    "Retrieve call detail records (CDR) for the organization. " +
-      "Can filter by person (name or ID), direction, call status, and location. " +
-      "Returns a formatted summary with deduplicated calls. " +
-      'Examples: "Show me Ronan\'s calls from yesterday", "List missed calls for the Paris office".',
     {
+      description: "Retrieve call detail records (CDR) for the organization. " +
+        "Can filter by person (name or ID), direction, call status, and location. " +
+        "Returns a formatted summary with deduplicated calls. " +
+        'Examples: "Show me Ronan\'s calls from yesterday", "List missed calls for the Paris office".',
+      inputSchema: {
       startTime: z
         .string()
         .optional()
@@ -102,6 +103,7 @@ export function registerAnalyticsTools(server: McpServer, api: WebexApiClient) {
         .optional()
         .default(false)
         .describe("If true, return raw CDR JSON instead of formatted summary"),
+      },
     },
     async (params) => {
       try {
@@ -241,12 +243,13 @@ export function registerAnalyticsTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Missed Calls Report ──
-  server.tool(
+  server.registerTool(
     "get_missed_calls_report",
-    "Generate a summary report of missed calls for the organization, a specific location, or a specific person. " +
-      "Returns total missed calls, breakdown by user, and time distribution. " +
-      "Ideal for quick dashboards and partner demos.",
     {
+      description: "Generate a summary report of missed calls for the organization, a specific location, or a specific person. " +
+        "Returns total missed calls, breakdown by user, and time distribution. " +
+        "Ideal for quick dashboards and partner demos.",
+      inputSchema: {
       startTime: z
         .string()
         .optional()
@@ -261,6 +264,7 @@ export function registerAnalyticsTools(server: McpServer, api: WebexApiClient) {
         .optional()
         .describe("Filter by person display name (case-insensitive partial match)"),
       max: z.number().optional().default(500).describe("Maximum CDR records to analyze"),
+      },
     },
     async (params) => {
       try {

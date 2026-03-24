@@ -7,13 +7,15 @@ import { WebexApiClient } from "../webex-api.js";
 
 export function registerHuntGroupTools(server: McpServer, api: WebexApiClient) {
   // ── List Hunt Groups ──
-  server.tool(
+  server.registerTool(
     "list_hunt_groups",
-    "List all hunt groups in the organization. Optionally filter by location or name.",
     {
+      description: "List all hunt groups in the organization. Optionally filter by location or name.",
+      inputSchema: {
       locationId: z.string().optional().describe("Filter by location ID"),
       name: z.string().optional().describe("Filter by hunt group name"),
       max: z.number().optional().default(100).describe("Maximum results"),
+      },
     },
     async (params) => {
       try {
@@ -35,12 +37,14 @@ export function registerHuntGroupTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Get Hunt Group Details ──
-  server.tool(
+  server.registerTool(
     "get_hunt_group",
-    "Get detailed configuration of a specific hunt group, including agents and call policies.",
     {
-      locationId: z.string().describe("The location ID of the hunt group"),
-      huntGroupId: z.string().describe("The unique ID of the hunt group"),
+      description: "Get detailed configuration of a specific hunt group, including agents and call policies.",
+      inputSchema: {
+        locationId: z.string().describe("The location ID of the hunt group"),
+        huntGroupId: z.string().describe("The unique ID of the hunt group"),
+      },
     },
     async (params) => {
       try {
@@ -58,13 +62,14 @@ export function registerHuntGroupTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Create Hunt Group ──
-  server.tool(
+  server.registerTool(
     "create_hunt_group",
-    "Create a new hunt group at a specific location. A hunt group rings a set of agents " +
-      "based on a routing policy (CIRCULAR = round-robin, REGULAR = top-down, SIMULTANEOUS = ring all, " +
-      "UNIFORM = longest idle, WEIGHTED = weighted distribution). " +
-      'Example: "Create a hunt group for the support team with 5 agents using round-robin."',
     {
+      description: "Create a new hunt group at a specific location. A hunt group rings a set of agents " +
+        "based on a routing policy (CIRCULAR = round-robin, REGULAR = top-down, SIMULTANEOUS = ring all, " +
+        "UNIFORM = longest idle, WEIGHTED = weighted distribution). " +
+        'Example: "Create a hunt group for the support team with 5 agents using round-robin."',
+      inputSchema: {
       locationId: z.string().describe("The location ID where the hunt group will be created"),
       name: z.string().describe("Name of the hunt group"),
       phoneNumber: z
@@ -83,6 +88,7 @@ export function registerHuntGroupTools(server: McpServer, api: WebexApiClient) {
         .array(z.string())
         .describe("Array of person IDs to add as agents in this hunt group"),
       enabled: z.boolean().optional().default(true).describe("Enable the hunt group"),
+      },
     },
     async (params) => {
       try {
@@ -115,10 +121,11 @@ export function registerHuntGroupTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Update Hunt Group ──
-  server.tool(
+  server.registerTool(
     "update_hunt_group",
-    "Update an existing hunt group's configuration — change agents, routing policy, name, etc.",
     {
+      description: "Update an existing hunt group's configuration — change agents, routing policy, name, etc.",
+      inputSchema: {
       locationId: z.string().describe("The location ID of the hunt group"),
       huntGroupId: z.string().describe("The unique ID of the hunt group to update"),
       name: z.string().optional().describe("New name for the hunt group"),
@@ -131,6 +138,7 @@ export function registerHuntGroupTools(server: McpServer, api: WebexApiClient) {
         .optional()
         .describe("New list of person IDs for agents (replaces existing agents)"),
       enabled: z.boolean().optional().describe("Enable or disable the hunt group"),
+      },
     },
     async (params) => {
       try {
@@ -159,12 +167,14 @@ export function registerHuntGroupTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Delete Hunt Group ──
-  server.tool(
+  server.registerTool(
     "delete_hunt_group",
-    "Delete a hunt group. This action cannot be undone.",
     {
-      locationId: z.string().describe("The location ID of the hunt group"),
-      huntGroupId: z.string().describe("The unique ID of the hunt group to delete"),
+      description: "Delete a hunt group. This action cannot be undone.",
+      inputSchema: {
+        locationId: z.string().describe("The location ID of the hunt group"),
+        huntGroupId: z.string().describe("The unique ID of the hunt group to delete"),
+      },
     },
     async (params) => {
       try {

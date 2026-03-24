@@ -7,15 +7,17 @@ import { WebexApiClient } from "../webex-api.js";
 
 export function registerDeviceTools(server: McpServer, api: WebexApiClient) {
   // ── List Devices ──
-  server.tool(
+  server.registerTool(
     "list_devices",
-    "List devices in the organization. Filter by person, workspace, or name. " +
-      "Useful for auditing device assignments.",
     {
+      description: "List devices in the organization. Filter by person, workspace, or name. " +
+        "Useful for auditing device assignments.",
+      inputSchema: {
       personId: z.string().optional().describe("Filter by person ID"),
       workspaceId: z.string().optional().describe("Filter by workspace ID"),
       displayName: z.string().optional().describe("Filter by device name"),
       max: z.number().optional().default(100).describe("Maximum results"),
+      },
     },
     async (params) => {
       try {
@@ -38,11 +40,13 @@ export function registerDeviceTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Get Device ──
-  server.tool(
+  server.registerTool(
     "get_device",
-    "Get detailed information about a specific device.",
     {
-      deviceId: z.string().describe("The unique ID of the device"),
+      description: "Get detailed information about a specific device.",
+      inputSchema: {
+        deviceId: z.string().describe("The unique ID of the device"),
+      },
     },
     async (params) => {
       try {
@@ -60,13 +64,15 @@ export function registerDeviceTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── List Workspaces ──
-  server.tool(
+  server.registerTool(
     "list_workspaces",
-    "List workspaces (conference rooms, shared spaces) in the organization.",
     {
+      description: "List workspaces (conference rooms, shared spaces) in the organization.",
+      inputSchema: {
       displayName: z.string().optional().describe("Filter by name"),
       locationId: z.string().optional().describe("Filter by location"),
       max: z.number().optional().default(100).describe("Maximum results"),
+      },
     },
     async (params) => {
       try {
@@ -88,11 +94,13 @@ export function registerDeviceTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Caller ID ──
-  server.tool(
+  server.registerTool(
     "get_caller_id",
-    "Get the caller ID settings for a specific user.",
     {
-      personId: z.string().describe("The unique ID of the person"),
+      description: "Get the caller ID settings for a specific user.",
+      inputSchema: {
+        personId: z.string().describe("The unique ID of the person"),
+      },
     },
     async (params) => {
       try {
@@ -110,10 +118,11 @@ export function registerDeviceTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Update Caller ID ──
-  server.tool(
+  server.registerTool(
     "update_caller_id",
-    "Update the caller ID settings for a person (name, number to display on outbound calls).",
     {
+      description: "Update the caller ID settings for a person (name, number to display on outbound calls).",
+      inputSchema: {
       personId: z.string().describe("The unique ID of the person"),
       selected: z
         .enum(["DIRECT_LINE", "LOCATION_NUMBER", "CUSTOM"])
@@ -124,6 +133,7 @@ export function registerDeviceTools(server: McpServer, api: WebexApiClient) {
         .describe("Custom phone number (required if selected=CUSTOM)"),
       firstName: z.string().optional().describe("First name to display"),
       lastName: z.string().optional().describe("Last name to display"),
+      },
     },
     async (params) => {
       try {

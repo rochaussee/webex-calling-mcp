@@ -7,13 +7,15 @@ import { WebexApiClient } from "../webex-api.js";
 
 export function registerLocationTools(server: McpServer, api: WebexApiClient) {
   // ── List Locations ──
-  server.tool(
+  server.registerTool(
     "list_locations",
-    "List all locations (offices/sites) in the Webex organization. " +
-      "Returns location IDs needed for most other operations.",
     {
+      description: "List all locations (offices/sites) in the Webex organization. " +
+        "Returns location IDs needed for most other operations.",
+      inputSchema: {
       name: z.string().optional().describe("Filter by location name"),
       max: z.number().optional().default(100).describe("Maximum results"),
+      },
     },
     async (params) => {
       try {
@@ -34,11 +36,13 @@ export function registerLocationTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Get Location Details ──
-  server.tool(
+  server.registerTool(
     "get_location",
-    "Get detailed info about a specific location, including address and time zone.",
     {
-      locationId: z.string().describe("The unique ID of the location"),
+      description: "Get detailed info about a specific location, including address and time zone.",
+      inputSchema: {
+        locationId: z.string().describe("The unique ID of the location"),
+      },
     },
     async (params) => {
       try {
@@ -56,16 +60,18 @@ export function registerLocationTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── List Schedules ──
-  server.tool(
+  server.registerTool(
     "list_schedules",
-    "List schedules (business hours or holidays) for a location.",
     {
+      description: "List schedules (business hours or holidays) for a location.",
+      inputSchema: {
       locationId: z.string().describe("The location ID"),
       type: z
         .enum(["businessHours", "holidays"])
         .optional()
         .describe("Filter by schedule type"),
       name: z.string().optional().describe("Filter by schedule name"),
+      },
     },
     async (params) => {
       try {
@@ -86,12 +92,13 @@ export function registerLocationTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Create Holiday Schedule ──
-  server.tool(
+  server.registerTool(
     "create_holiday_schedule",
-    "Create a holiday schedule for a location. This can be used to route calls " +
-      "differently during holidays (e.g., send to voicemail). " +
-      'Example: "Set up a holiday schedule for Paris — close Dec 24 to Jan 2."',
     {
+      description: "Create a holiday schedule for a location. This can be used to route calls " +
+        "differently during holidays (e.g., send to voicemail). " +
+        'Example: "Set up a holiday schedule for Paris — close Dec 24 to Jan 2."',
+      inputSchema: {
       locationId: z.string().describe("The location ID"),
       name: z.string().describe("Name for the schedule (e.g., 'Christmas Break 2025')"),
       events: z
@@ -108,6 +115,7 @@ export function registerLocationTools(server: McpServer, api: WebexApiClient) {
           })
         )
         .describe("Array of holiday events"),
+      },
     },
     async (params) => {
       try {
@@ -134,13 +142,15 @@ export function registerLocationTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── List Auto Attendants ──
-  server.tool(
+  server.registerTool(
     "list_auto_attendants",
-    "List all auto attendants (IVR menus) in the organization.",
     {
+      description: "List all auto attendants (IVR menus) in the organization.",
+      inputSchema: {
       locationId: z.string().optional().describe("Filter by location ID"),
       name: z.string().optional().describe("Filter by name"),
       max: z.number().optional().default(100).describe("Maximum results"),
+      },
     },
     async (params) => {
       try {
@@ -162,12 +172,14 @@ export function registerLocationTools(server: McpServer, api: WebexApiClient) {
   );
 
   // ── Get Auto Attendant ──
-  server.tool(
+  server.registerTool(
     "get_auto_attendant",
-    "Get the detailed configuration of an auto attendant (IVR), including menus and key actions.",
     {
-      locationId: z.string().describe("The location ID of the auto attendant"),
-      autoAttendantId: z.string().describe("The unique ID of the auto attendant"),
+      description: "Get the detailed configuration of an auto attendant (IVR), including menus and key actions.",
+      inputSchema: {
+        locationId: z.string().describe("The location ID of the auto attendant"),
+        autoAttendantId: z.string().describe("The unique ID of the auto attendant"),
+      },
     },
     async (params) => {
       try {
