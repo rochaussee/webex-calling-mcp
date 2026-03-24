@@ -134,6 +134,7 @@ The MCP server needs your **Client ID** and **Client Secret** at runtime to auto
 #### VS Code (Copilot / Claude Dev)
 
 Add to your `.vscode/mcp.json` or VS Code global settings:
+
 - **macOS**: `~/Library/Application Support/Code/User/mcp.json`
 - **Windows**: `%APPDATA%\Code\User\mcp.json`
 
@@ -157,6 +158,7 @@ Add to your `.vscode/mcp.json` or VS Code global settings:
 #### Claude Desktop
 
 Add to your Claude Desktop config:
+
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
