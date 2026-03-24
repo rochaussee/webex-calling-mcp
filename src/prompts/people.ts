@@ -17,16 +17,16 @@ export function registerPeoplePrompts(server: McpServer) {
         .string()
         .optional()
         .describe("Exact email address to look up"),
-      locationId: z
+      location: z
         .string()
         .optional()
-        .describe("Location ID to filter users by site/office"),
+        .describe("Location name to filter users by site/office (e.g. 'Paris', 'HQ')"),
     },
     (args) => {
       const filters: string[] = [];
       if (args.name) filters.push(`- Name contains: "${args.name}"`);
       if (args.email) filters.push(`- Email: ${args.email}`);
-      if (args.locationId) filters.push(`- Location ID: ${args.locationId}`);
+      if (args.location) filters.push(`- Location name: "${args.location}"`);
 
       const filterSection =
         filters.length > 0
@@ -44,6 +44,9 @@ export function registerPeoplePrompts(server: McpServer) {
                 "",
                 filterSection,
                 "",
+                args.location
+                  ? `First, use the \`list_locations\` tool to find the location ID matching "${args.location}", then pass that locationId to \`list_people\`.`
+                  : "",
                 "Always include calling data (callingData=true) so we can see phone numbers and extensions.",
                 "",
                 "Present the results as a clear, formatted table with these columns:",
