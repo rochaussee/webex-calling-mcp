@@ -92,7 +92,7 @@ If prompted to install Xcode Command Line Tools, accept the installation.
 | *"Enable Do Not Disturb for the entire executive team."* | Batch-updates DND settings |
 | *"Find available phone numbers in the London office."* | Queries number inventory |
 
-## Available Tools (30+)
+## Available Tools (35+)
 
 ### People & Users
 
@@ -141,6 +141,13 @@ If prompted to install Xcode Command Line Tools, accept the installation.
 - `list_devices` / `get_device` — View device inventory
 - `list_workspaces` — View conference rooms & shared spaces
 - `get_caller_id` / `update_caller_id` — Manage caller ID settings
+
+### Organization Contacts & Groups
+
+- `list_org_contacts` / `get_org_contact` — View org directory contacts
+- `create_org_contact` — Add external contacts to the org directory
+- `update_org_contact` / `delete_org_contact` — Manage existing contacts
+- `list_groups` — List groups (used to scope contact visibility)
 
 ## Quick Start
 
@@ -218,9 +225,11 @@ Replace `xxx` and `yyy` with the **Client ID** and **Client Secret** from step 2
 **What happens:**
 
 1. Your browser opens the Webex login page
-2. You sign in with your Webex admin account
+2. You sign in with your Webex Full Admin account
 3. Webex sends back authentication tokens to the local server
-4. Tokens are saved locally in `~/.webex-mcp/tokens.json`
+4. Tokens are saved locally:
+   - **macOS / Linux**: `~/.webex-mcp/tokens.json`
+   - **Windows**: `%USERPROFILE%\.webex-mcp\tokens.json`
 
 **About tokens:**
 
@@ -344,10 +353,6 @@ Add to your Claude Desktop config:
 
 Once configured, restart VS Code or Claude Desktop, then just ask questions in natural language. The AI will automatically pick the right MCP tools.
 
-**How to open a terminal:**
-- **macOS**: Spotlight (⌘ + Space) → type "Terminal", or in VS Code: `Ctrl + `` `
-- **Windows**: Search → type "PowerShell", or in VS Code: `` Ctrl + ` ``
-
 ## Architecture
 
 ```text
@@ -384,8 +389,7 @@ src/
     ├── numbers.ts       # Phone number management
     ├── analytics.ts     # CDR & missed call reports
     ├── locations.ts     # Locations, schedules, auto attendants
-    └── devices.ts       # Devices, workspaces, caller ID
-```
+    └── devices.ts       # Devices, workspaces, caller ID    └── contacts.ts      # Organization contacts & groups```
 
 ## Development
 
