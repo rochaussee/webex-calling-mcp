@@ -6,8 +6,78 @@ Built for Cisco partners and network engineers to demonstrate the power of AI-dr
 
 ## Prerequisites
 
-- **Node.js** (v18 or later) — [Download here](https://nodejs.org) (LTS version recommended)
-- A **Webex Full Admin account**
+### 1. Node.js (v18 or later)
+
+Node.js is the runtime needed to execute the MCP server. You must install it on every machine where you want to run the server.
+
+<details>
+<summary><strong>macOS</strong></summary>
+
+**Option A — Installer:**
+1. Go to [nodejs.org](https://nodejs.org) and download the **LTS** version (green button)
+2. Open the `.pkg` file and follow the installer
+3. Open **Terminal** (Spotlight → type "Terminal") and verify:
+   ```bash
+   node --version
+   npm --version
+   ```
+
+**Option B — Homebrew** (if you have it):
+```bash
+brew install node
+```
+
+</details>
+
+<details>
+<summary><strong>Windows</strong></summary>
+
+1. Go to [nodejs.org](https://nodejs.org) and download the **LTS** version (green button)
+2. Run the `.msi` installer — **keep all default options** (this adds `node` and `npm` to your PATH automatically)
+3. **Restart your terminal** (close and reopen PowerShell or cmd)
+4. Verify the installation:
+   ```powershell
+   node --version
+   npm --version
+   ```
+
+> **Troubleshooting:** If `npm` is not recognized after installation, restart your computer to ensure the PATH is updated.
+
+</details>
+
+### 2. Git
+
+Git is needed to clone this repository.
+
+<details>
+<summary><strong>macOS</strong></summary>
+
+Git is pre-installed on macOS. Verify with:
+```bash
+git --version
+```
+If prompted to install Xcode Command Line Tools, accept the installation.
+
+</details>
+
+<details>
+<summary><strong>Windows</strong></summary>
+
+1. Download Git from [git-scm.com](https://git-scm.com/download/win)
+2. Run the installer — **keep all default options**
+3. Restart your terminal and verify:
+   ```powershell
+   git --version
+   ```
+
+</details>
+
+### 3. A Webex Full Admin account
+
+### 4. An AI client that supports MCP
+
+- **VS Code** with GitHub Copilot (Chat agent mode) — [Download VS Code](https://code.visualstudio.com)
+- **Claude Desktop** — [Download Claude Desktop](https://claude.ai/download)
 
 ## Demo Scenarios (Live with partners)
 
@@ -74,30 +144,66 @@ Built for Cisco partners and network engineers to demonstrate the power of AI-dr
 
 ## Quick Start
 
-### 1. Create a Webex Integration
+### 1. Clone the repository
+
+<details>
+<summary><strong>macOS</strong></summary>
+
+Open **Terminal** and run:
+```bash
+cd ~/Desktop
+git clone https://github.com/rochaussee/webex-calling-mcp.git
+cd webex-calling-mcp
+```
+
+</details>
+
+<details>
+<summary><strong>Windows</strong></summary>
+
+Open **PowerShell** and run:
+```powershell
+cd $HOME\Desktop
+git clone https://github.com/rochaussee/webex-calling-mcp.git
+cd webex-calling-mcp
+```
+
+</details>
+
+### 2. Create a Webex Integration
 
 1. Go to [developer.webex.com](https://developer.webex.com/my-apps/new/integration)
-2. Sign in with your Webex admin account
+2. Sign in with your Webex Full Admin account
 3. Create a new **Integration** and note the **Client ID** and **Client Secret**
 4. Set the Redirect URI to `http://localhost:22991/callback`
 5. Select the required scopes (see `src/auth.ts` for the default list)
 
-### 2. Install & Build
+### 3. Install dependencies & Build
+
+These commands are the same on macOS and Windows:
 
 ```bash
 npm install
 npm run build
 ```
 
-### 3. Authenticate (one-time setup)
+> **Note:** You must be in the project folder (e.g. `cd webex-calling-mcp`) before running these commands.
 
-**macOS / Linux (bash/zsh):**
+### 4. Authenticate (one-time setup)
+
+<details>
+<summary><strong>macOS / Linux</strong></summary>
 
 ```bash
 WEBEX_CLIENT_ID=xxx WEBEX_CLIENT_SECRET=yyy npm run auth
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details>
+<summary><strong>Windows (PowerShell)</strong></summary>
+
+On Windows, you must set environment variables separately — the `VAR=value command` syntax does not work in PowerShell:
 
 ```powershell
 $env:WEBEX_CLIENT_ID="xxx"
@@ -105,9 +211,9 @@ $env:WEBEX_CLIENT_SECRET="yyy"
 npm run auth
 ```
 
-Replace `xxx` and `yyy` with the **Client ID** and **Client Secret** from step 1.
+</details>
 
-> **Note Windows:** La syntaxe `VAR=value command` ne fonctionne pas dans PowerShell. Il faut définir les variables d'environnement séparément avec `$env:VAR="value"` avant de lancer la commande.
+Replace `xxx` and `yyy` with the **Client ID** and **Client Secret** from step 2.
 
 **What happens:**
 
@@ -130,7 +236,7 @@ npm run auth -- --logout   # Clear stored tokens
 npm run auth -- --help     # Full help
 ```
 
-### 4. Configure in your MCP Client
+### 5. Configure in your MCP Client
 
 The MCP server needs your **Client ID** and **Client Secret** at runtime to automatically refresh expired access tokens. These are passed as environment variables in the MCP configuration.
 
@@ -143,12 +249,15 @@ Add to your `.vscode/mcp.json` or VS Code global settings:
 - **macOS**: `~/Library/Application Support/Code/User/mcp.json`
 - **Windows**: `%APPDATA%\Code\User\mcp.json`
 
+<details>
+<summary><strong>macOS example</strong></summary>
+
 ```json
 {
   "mcpServers": {
     "webex-calling": {
       "command": "node",
-      "args": ["<absolute-path-to>/dist/index.js"],
+      "args": ["/Users/<your-username>/Desktop/webex-calling-mcp/dist/index.js"],
       "env": {
         "WEBEX_CLIENT_ID": "your-integration-client-id",
         "WEBEX_CLIENT_SECRET": "your-integration-client-secret"
@@ -157,6 +266,30 @@ Add to your `.vscode/mcp.json` or VS Code global settings:
   }
 }
 ```
+
+</details>
+
+<details>
+<summary><strong>Windows example</strong></summary>
+
+```json
+{
+  "mcpServers": {
+    "webex-calling": {
+      "command": "node",
+      "args": ["C:\\Users\\<your-username>\\Desktop\\webex-calling-mcp\\dist\\index.js"],
+      "env": {
+        "WEBEX_CLIENT_ID": "your-integration-client-id",
+        "WEBEX_CLIENT_SECRET": "your-integration-client-secret"
+      }
+    }
+  }
+}
+```
+
+> **Note:** Use double backslashes `\\` in JSON paths on Windows.
+
+</details>
 
 > **Security note:** This file is local to your machine and not tracked by git. Never commit your credentials.
 
@@ -167,12 +300,15 @@ Add to your Claude Desktop config:
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
+<details>
+<summary><strong>macOS example</strong></summary>
+
 ```json
 {
   "mcpServers": {
     "webex-calling": {
       "command": "node",
-      "args": ["<absolute-path-to>/dist/index.js"],
+      "args": ["/Users/<your-username>/Desktop/webex-calling-mcp/dist/index.js"],
       "env": {
         "WEBEX_CLIENT_ID": "your-integration-client-id",
         "WEBEX_CLIENT_SECRET": "your-integration-client-secret"
@@ -182,9 +318,35 @@ Add to your Claude Desktop config:
 }
 ```
 
-### 5. Start Talking to Your Infrastructure
+</details>
 
-Once configured, just ask Claude/Copilot questions in natural language. The AI will automatically pick the right MCP tools.
+<details>
+<summary><strong>Windows example</strong></summary>
+
+```json
+{
+  "mcpServers": {
+    "webex-calling": {
+      "command": "node",
+      "args": ["C:\\Users\\<your-username>\\Desktop\\webex-calling-mcp\\dist\\index.js"],
+      "env": {
+        "WEBEX_CLIENT_ID": "your-integration-client-id",
+        "WEBEX_CLIENT_SECRET": "your-integration-client-secret"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+### 6. Start Talking to Your Infrastructure
+
+Once configured, restart VS Code or Claude Desktop, then just ask questions in natural language. The AI will automatically pick the right MCP tools.
+
+**How to open a terminal:**
+- **macOS**: Spotlight (⌘ + Space) → type "Terminal", or in VS Code: `Ctrl + `` `
+- **Windows**: Search → type "PowerShell", or in VS Code: `` Ctrl + ` ``
 
 ## Architecture
 
@@ -227,7 +389,8 @@ src/
 
 ## Development
 
-**macOS / Linux (bash/zsh):**
+<details>
+<summary><strong>macOS / Linux</strong></summary>
 
 ```bash
 # Run in development mode (no build step)
@@ -240,7 +403,10 @@ npm run build
 WEBEX_CLIENT_ID=xxx WEBEX_CLIENT_SECRET=yyy node dist/index.js
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details>
+<summary><strong>Windows (PowerShell)</strong></summary>
 
 ```powershell
 # Set environment variables (do this once per terminal session)
@@ -256,6 +422,8 @@ npm run build
 # Run production build
 node dist/index.js
 ```
+
+</details>
 
 ## Security Notes
 
