@@ -389,7 +389,9 @@ src/
     ├── numbers.ts       # Phone number management
     ├── analytics.ts     # CDR & missed call reports
     ├── locations.ts     # Locations, schedules, auto attendants
-    └── devices.ts       # Devices, workspaces, caller ID    └── contacts.ts      # Organization contacts & groups```
+    ├── devices.ts       # Devices, workspaces, caller ID
+    └── contacts.ts      # Organization contacts & groups
+```
 
 ## Development
 
