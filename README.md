@@ -4,6 +4,11 @@ An MCP (Model Context Protocol) server that lets you **manage your entire Webex 
 
 Built for Cisco partners and network engineers to demonstrate the power of AI-driven network administration.
 
+## Prerequisites
+
+- **Node.js** (v18 or later) — [Download here](https://nodejs.org) (LTS version recommended)
+- A **Webex Full Admin account**
+
 ## Demo Scenarios (Live with partners)
 
 | Natural Language Command | What it does |
