@@ -315,19 +315,22 @@ export class WebexApiClient {
   // ────────────────────────── Call Detail Records ──────────────────────────
 
   async getCallDetailRecords(params: {
-    startTime?: string;
-    endTime?: string;
+    startTime: string;
+    endTime: string;
     locations?: string;
     max?: number;
-  } = {}) {
-    const q: Record<string, string> = {};
-    if (params.startTime) q.startTime = params.startTime;
-    if (params.endTime) q.endTime = params.endTime;
+  }) {
+    const q: Record<string, string> = {
+      startTime: params.startTime,
+      endTime: params.endTime,
+    };
     if (params.locations) q.locations = params.locations;
-    if (params.max) q.max = String(params.max);
+    // max range is 500-5000, default 5000
+    if (params.max) q.max = String(Math.max(500, Math.min(5000, params.max)));
 
     // CDR API uses a different base URL
-    const url = new URL("https://analytics-calling.webexapis.com/v1/cdr_feed");
+    const baseUrl = "https://analytics-calling.webexapis.com/v1/cdr_feed";
+    const url = new URL(baseUrl);
     for (const [key, value] of Object.entries(q)) {
       if (value !== undefined && value !== "") {
         url.searchParams.set(key, value);
@@ -335,22 +338,44 @@ export class WebexApiClient {
     }
 
     const token = await this.tokenProvider();
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `Webex API error ${response.status} ${response.statusText}: ${errorText}`
-      );
+    // Fetch with pagination
+    let allItems: unknown[] = [];
+    let currentUrl: string | null = url.toString();
+
+    while (currentUrl) {
+      const fetchUrl = currentUrl;
+      currentUrl = null;
+
+      const response: Response = await fetch(fetchUrl, { method: "GET", headers });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Webex API error ${response.status} ${response.statusText}: ${errorText}`
+        );
+      }
+
+      const data = (await response.json()) as { items?: unknown[] };
+      if (data.items) {
+        allItems = allItems.concat(data.items);
+      }
+
+      // Follow pagination via Link header
+      const linkHeader: string | null = response.headers.get("Link");
+      if (linkHeader) {
+        const match: RegExpMatchArray | null = linkHeader.match(/<([^>]+)>;\s*rel="next"/);
+        if (match) {
+          currentUrl = match[1];
+        }
+      }
     }
 
-    return (await response.json()) as unknown;
+    return { items: allItems };
   }
 
   // ────────────────────────── Schedules ──────────────────────────
