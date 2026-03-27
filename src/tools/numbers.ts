@@ -61,16 +61,53 @@ export function registerNumberTools(server: McpServer, api: WebexApiClient) {
           max: params.max,
         })) as { phoneNumbers?: Array<{ phoneNumber: string; location?: { name: string }; phoneNumberType?: string }> };
 
-        const summary = {
-          availableCount: (result.phoneNumbers || []).length,
-          numbers: (result.phoneNumbers || []).map((n) => ({
-            number: n.phoneNumber,
-            location: n.location?.name,
-            type: n.phoneNumberType,
-          })),
-        };
+        const numbers = (result.phoneNumbers || []).map((n) => ({
+          number: n.phoneNumber,
+          location: n.location?.name || "Unknown",
+          type: n.phoneNumberType,
+        }));
+
+        // Group by location
+        const byLocation = new Map<string, string[]>();
+        for (const n of numbers) {
+          const list = byLocation.get(n.location) || [];
+          list.push(n.number);
+          byLocation.set(n.location, list);
+        }
+
+        // Build a compact range description for consecutive numbers
+        function formatRanges(nums: string[]): string {
+          if (nums.length === 0) return "";
+          const sorted = [...nums].sort();
+          const ranges: string[] = [];
+          let start = sorted[0];
+          let prev = sorted[0];
+          for (let i = 1; i < sorted.length; i++) {
+            const prevNum = BigInt(prev.replace(/\D/g, ""));
+            const currNum = BigInt(sorted[i].replace(/\D/g, ""));
+            if (currNum === prevNum + 1n) {
+              prev = sorted[i];
+            } else {
+              ranges.push(start === prev ? start : `${start} to ${prev}`);
+              start = sorted[i];
+              prev = sorted[i];
+            }
+          }
+          ranges.push(start === prev ? start : `${start} to ${prev}`);
+          return ranges.join(", ");
+        }
+
+        const lines: string[] = [];
+        lines.push(`Available numbers: ${numbers.length}`);
+        lines.push("");
+        lines.push("| Site | Qty | Numbers |");
+        lines.push("|---|---|---|");
+        for (const [location, nums] of byLocation) {
+          lines.push(`| ${location} | ${nums.length} | ${formatRanges(nums)} |`);
+        }
+
         return {
-          content: [{ type: "text", text: JSON.stringify(summary, null, 2) }],
+          content: [{ type: "text", text: lines.join("\n") }],
         };
       } catch (error) {
         return {
