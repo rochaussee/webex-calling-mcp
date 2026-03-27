@@ -224,6 +224,117 @@ export function registerCallForwardingTools(server: McpServer, api: WebexApiClie
     }
   );
 
+  // ── Bulk Update Call Forwarding (all Webex Calling users) ──
+  server.registerTool(
+    "bulk_update_call_forwarding",
+    {
+      description:
+        "Apply call forwarding settings to ALL Webex Calling users at once, or only to users at a specific location. " +
+        "Webex Calling users are identified by having a locationId. " +
+        "Use the optional locationId parameter to target a specific site (e.g. HQ FR). " +
+        "Returns a summary of successes and failures per user.",
+      inputSchema: {
+        locationId: z
+          .string()
+          .optional()
+          .describe("Optional: only apply to users at this location ID. Use list_locations to find the ID."),
+        callForwarding: z
+          .object({
+            always: z
+              .object({
+                enabled: z.boolean(),
+                destination: z.string().optional(),
+                ringReminderEnabled: z.boolean().optional(),
+                destinationVoicemailEnabled: z.boolean().optional(),
+              })
+              .optional()
+              .describe("Always forward all calls"),
+            busy: z
+              .object({
+                enabled: z.boolean(),
+                destination: z.string().optional(),
+                destinationVoicemailEnabled: z.boolean().optional(),
+              })
+              .optional()
+              .describe("Forward when busy"),
+            noAnswer: z
+              .object({
+                enabled: z.boolean(),
+                destination: z.string().optional(),
+                numberOfRings: z.number().optional(),
+                systemMaxNumberOfRings: z.number().optional(),
+                destinationVoicemailEnabled: z.boolean().optional(),
+              })
+              .optional()
+              .describe("Forward when no answer"),
+          })
+          .describe("Call forwarding configuration to apply to all users"),
+      },
+    },
+    async (params) => {
+      try {
+        // 1. List all people with calling data
+        const people = (await api.listPeople({ callingData: true, max: 500 })) as {
+          items?: Array<{
+            id: string;
+            displayName: string;
+            locationId?: string;
+          }>;
+        };
+
+        // 2. Filter to Webex Calling users (those with a locationId)
+        // If locationId param is provided, also filter by that location
+        const wxcUsers = (people.items || []).filter(
+          (p) => p.locationId && (!params.locationId || p.locationId === params.locationId)
+        );
+
+        if (wxcUsers.length === 0) {
+          return {
+            content: [{ type: "text", text: "No Webex Calling users found." }],
+          };
+        }
+
+        // 3. Apply call forwarding to each user
+        const results: Array<{ user: string; status: string; error?: string }> = [];
+        for (const user of wxcUsers) {
+          try {
+            await api.updatePersonCallForwarding(user.id, {
+              callForwarding: params.callForwarding,
+            });
+            results.push({ user: user.displayName, status: "success" });
+          } catch (err) {
+            results.push({
+              user: user.displayName,
+              status: "failed",
+              error: (err as Error).message,
+            });
+          }
+        }
+
+        const successCount = results.filter((r) => r.status === "success").length;
+        const failCount = results.filter((r) => r.status === "failed").length;
+
+        const summary = [
+          `Bulk call forwarding update completed.`,
+          `Total Webex Calling users: ${wxcUsers.length}`,
+          `Successes: ${successCount} | Failures: ${failCount}`,
+          ``,
+          ...results.map(
+            (r) =>
+              `- ${r.user}: ${r.status === "success" ? "✅" : `❌ ${r.error}`}`
+          ),
+        ].join("\n");
+
+        return { content: [{ type: "text", text: summary }] };
+      } catch (error) {
+        return {
+          content: [{ type: "text", text: `Error: ${(error as Error).message}` }],
+          isError: true,
+        };
+      }
+    }
+  );
+
   // ── Do Not Disturb ──
   server.registerTool(
     "set_do_not_disturb",
